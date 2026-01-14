@@ -1,0 +1,124 @@
+@font-face {
+    font-family: 'Rubik';
+    src: url('/assets/Rubik.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+/* --- */
+html {
+    min-height: 100vh;
+}
+
+body {
+    height: 100%;
+    background: linear-gradient(120deg, #f6d365, #fda085);
+    color: white;
+    font-family: 'Rubik', sans-serif;
+    padding: 1rem 0;
+}
+
+/* --- */
+h1 {
+    font-size: 2em;
+}
+
+header, form {
+    margin: 0 0 1rem 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* --- */
+form input, form button, form select {
+    padding: 0.5rem;
+    font-size: 1em;
+    border: none;
+    outline: none;
+    background: white;
+}
+
+#todo-add-btn {
+    color: #fda085;
+    cursor: pointer;
+    font-size: inherit;
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+#todo-add-btn:hover {
+    background: #fda085;
+    color: white;
+}
+
+#todo-filter {
+    width: 10rem;
+    margin-left: 1rem;
+    color: #fda085;
+    cursor: pointer;
+}
+
+/* --- */
+#todo-list-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#todo-list {
+    min-width: 30%;
+    list-style: none;
+}
+
+/* --- */
+.todo {
+    margin: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    color: black;
+    font-size: 1em;
+    transition: all 0.2s ease;
+}
+
+.todo-txt {
+    flex: 1;
+    padding: 0rem 0.5rem;
+}
+
+.complete-btn, .delete-btn {
+    padding: 0.5rem;
+    color: white;
+    border: none;
+    outline: none;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.complete-btn {
+    background-color: #49cc49;
+}
+
+.delete-btn {
+    background-color: #ff6f47;
+}
+
+.completed {
+    text-decoration: line-through;
+    opacity: 0.5;
+}
+
+.fall {
+    transform: translateY(8rem) rotateZ(20deg);
+    opacity: 0;
+}
+
+/* --- */
+.fa-trash-alt, .fa-check {
+    pointer-events: none;
+}
