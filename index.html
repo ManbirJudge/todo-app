@@ -4,64 +4,37 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
     <link rel="shortcut icon" href="favicon.ico">
-    <script src="https://kit.fontawesome.com/7fa49a6d73.js" crossorigin="anonymous"></script>
-
+    <script src="js/storage.js"></script>
     <title>Todo List</title>
-
-    <script src="./js/storage.js"></script>
+    <script src="https://kit.fontawesome.com/7fa49a6d73.js" crossorigin="anonymous"></script>
 </head>
 <body>
+    <menu id="todo-context-menu" class="context-menu">
+        <li>Mark as completed</li>
+        <li>Mark as important</li>
+        <!-- <li>Due today</li>
+        <li>Due tommorow</li>
+        <li>Pick due date</li> -->
+        <li>Move to</li>
+        <li id="dlt-task">Delete Task</li>
+    </menu>
     <div class="side-bar">
         <h1>Todo List</h1>
-        <ul>
-            <li>Matsh</li>
-            <li>Matsh</li>
-            <li>Matsh</li>
-            <li>Matsh</li>
-            <li>Matsh</li>
-            <li>Matsh</li>
-            <li>Matsh</li>
-            <li>Matsh</li>
-            <li>Matsh</li>
-            <li>Matsh</li>
-            <li>Matsh</li>
-            <li>Matsh</li>
-            <li>Matsh</li>
-            <li>Matsh</li>
-            <li>Matsh</li>
-            <li>Matsh</li>
-            <li>Matsh</li>
-            <li>Matsh</li>
-            <li>Matsh</li>
-        </ul>
+        <ul id="lists-list"></ul>
+        <button id="side-bar--new-list-btn" class="btn"><i class="fa-solid fa-square-plus"></i>New List</button>
     </div>
     <div class="content">
-        <h2>Matsh</h2>
-        <ul>
-            <li>Trigonometry</li>
-            <li>Trigonometry</li>
-            <li>Trigonometry</li>
-            <li>Trigonometry</li>
-            <li>Trigonometry</li>
-            <li>Trigonometry</li>
-            <li>Trigonometry</li>
-            <li>Trigonometry</li>
-            <li>Trigonometry</li>
-            <li>Trigonometry</li>
-            <li>Trigonometry</li>
-            <li>Trigonometry</li>
-            <li>Trigonometry</li>
-            <li>Trigonometry</li>
-            <li>Trigonometry</li>
-            <li>Trigonometry</li>
-        </ul>
-        <form>
-            <input type="text" placeholder="Add todo ...">
-        </form>
+        <div class="content--header">
+            <h2 id="list-title"></h2>
+            <div>
+                <button id="list-dlt-btn" class="btn btn-icon btn-danger"><i class="fa-regular fa-trash-can"></i></button>
+            </div>
+        </div>
+        <ul id="todos-list"></ul>
+        <input id="add-todo" type="text" placeholder="Add todo ...">
     </div>
-    <script src="./js/main.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>

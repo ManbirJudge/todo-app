@@ -1,7 +1,12 @@
 # Todo App
 ## Plan of Action
-- Design and implement UI.
-- Design and implement DB handling.
+- ~~Basic stuff~~
+- Todo and list order customizablity
+- Todo detail view
+- Editing lists and todos
+- Special lists
+- List customizablity
+- Mobile responsiveness
 - Features
   - Lists
   - Groups
@@ -12,6 +17,7 @@
   - Due dates
   - Repetition
   - PWA
+  - Context menus
 - Maybe
   - Sharing (convert to text with emojis)
   - Export/import features

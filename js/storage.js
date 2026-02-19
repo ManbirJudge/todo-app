@@ -1,13 +1,13 @@
 /**
  * @typedef {Object} Todo
  * @property {number} id
- * @property {title} string
+ * @property {string} title 
  * @property {string | null} desc
  * @property {number} createdAt
  * @property {number | null} dueAt
- * @property {boolean} completed
+ * @property {boolean} isCompleted
  * @property {number} list
- * @property {list[]} subTodos
+ * @property {number[]} subTodos
  */
 
 /**
@@ -18,18 +18,22 @@
 
 class DB {
     db = null;
-    initialized = false
+    initialized = false;
 
-    constructor() {
+    init(onInit) {
         let req = indexedDB.open("TodoDB", 3);
+
         req.onerror = function(evt) {
             console.log(`[ERROR][DB] ${evt.target.error?.message}`);
         };
+
         req.onsuccess = evt => {
             this.db = evt.target.result;
             this.initialized = true;
             console.log("[_INFO][DB] Initialized.");
+            if (onInit) onInit();
         };
+
         req.onupgradeneeded = function(evt) {
             const db = evt.target.result; 
             if (!db.objectStoreNames.contains("lists")) {
@@ -52,18 +56,20 @@ class DB {
         return new Promise((resolve, reject) => {
             const tx = this.db.transaction("lists", "readwrite");
             const store = tx.objectStore("lists");
-            const req = store.add({ name });
 
+            const req = store.add({ name });
+            
+            let newList;
             req.onsuccess = evt => {
-                resolve({
+                newList = {
                     id: evt.target.result,
                     name
-                });
+                };
             }
 
-            req.onerror = evt => {
-                reqect(evt.target.error);
-            }
+            tx.oncomplete = () => resolve(newList);
+            tx.onerror = evt => reject(evt.target.error);
+            tx.onabort = evt => reject(evt.target.error);
         });
     }
 
@@ -71,19 +77,29 @@ class DB {
         return new Promise((resolve, reject) => {
             const tx = this.db.transaction("todos", "readwrite");
             const store = tx.objectStore("todos");
-            const req = store.add({ title, list });
 
+            const todo = {
+                title,
+                desc: null,
+                createdAt: Date.now(),
+                dueAt: null,
+                isCompleted: false,
+                list,
+                subTodos: []
+            };
+            const req = store.add(todo);
+            
+            let newTodo;
             req.onsuccess = evt => {
-                resolve({
-                    id: evt.target.result,
-                    title,
-                    list
-                });
-            }
+                newTodo = {
+                    ...todo,
+                    id: evt.target.result
+                };
+            };
 
-            req.onerror = evt => {
-                reqect(evt.target.error);
-            }
+            tx.oncomplete = () => resolve(newTodo);
+            tx.onerror = evt => reject(evt.target.error);
+            tx.onabort = evt => reject(evt.target.error);
         });
     }
 
@@ -91,32 +107,86 @@ class DB {
         return new Promise((resolve, reject) => {
             const tx = this.db.transaction("lists", "readonly");
             const store = tx.objectStore("lists");
-            const req = store.getAll();
 
+            const req = store.getAll();
+            
+            let lists;
             req.onsuccess = evt => {
-                resolve(evt.target.result);
+                lists = evt.target.result;
             };
 
-            req.onerror = evt => {
-                reject(evt.target.error);
-            }
+            tx.oncomplete = () => resolve(lists);
+            tx.onerror = evt => reject(evt.target.error);
+            tx.onabort = evt => reject(evt.target.error);
         });
     }
 
-    getTodods(list) {
+    getTodos(list) {
         return new Promise((resolve, reject) => {
             const tx = this.db.transaction("todos", "readonly");
             const store = tx.objectStore("todos");
             const idx = store.index("by_list");
-            const req = index.getAll(list);
 
+            const req = idx.getAll(list);
+
+            let todos;
             req.onsuccess = evt => {
-                resolve(evt.target.result);
+                todos = evt.target.result;
             };
 
-            req.onerror = evt => {
-                reject(evt.target.error);
-            }
+            tx.oncomplete = () => resolve(todos);
+            tx.onerror = evt => reject(evt.target.error);
+            tx.onabort = evt => reject(evt.target.error);
+        });
+    }
+
+    updateTodo(todo, updates) {
+        return new Promise((resolve, reject) => {
+            const tx = this.db.transaction("todos", "readwrite");
+            const store = tx.objectStore("todos");
+            
+            store.put({ ...todo, ...updates });
+
+            tx.oncomplete = () => resolve();
+            tx.onerror = evt => reject(evt.target.error);
+            tx.onabort = evt => reject(evt.target.error);
+        });
+    }
+
+    dltTodo(todoId) {
+        return new Promise((resolve, reject) => {
+            const tx = this.db.transaction("todos", "readwrite");
+            const store = tx.objectStore("todos");
+
+            store.delete(todoId);
+
+            tx.oncomplete = () => resolve();
+            tx.onerror = evt => reject(evt.target.error);
+            tx.onabort = evt => reject(evt.target.error);
+        });
+    }
+
+    dltList(listId) {
+        return new Promise((resolve, reject) => {
+            const tx = this.db.transaction(["lists", "todos"], "readwrite");
+            const listStore = tx.objectStore("lists");
+            const todoStore = tx.objectStore("todos");
+            const idx = todoStore.index("by_list");
+
+            listStore.delete(listId);
+
+            const range = window.IDBKeyRange.only(listId);
+            idx.openCursor(range).onsuccess = evt => {
+                const cur = evt.target.result;
+                if (cur) {
+                    cur.delete();
+                    cur.continue();
+                }
+            };
+
+            tx.oncomplete = () => resolve();
+            tx.onerror = evt => reject(evt.target.error);
+            tx.onabort = evt => reject(evt.target.error);
         });
     }
 }
