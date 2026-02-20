@@ -32,13 +32,17 @@
     background-color: #424242;
 }
 
-.btn.btn-danger i {
+.btn.btn-icon i {
     margin: 0;
 }
 
 .btn.btn-danger:hover {
-    background-color: #5c3636;
-    color: #fc2d2d;
+    background-color: #5c3636 !important;
+    color: #fc2d2d !important;
+}
+
+.spacer {
+    flex: 1;
 }
 
 /* --- */
@@ -122,7 +126,8 @@ body {
 }
 
 .content ul li {
-    padding: 1rem 1rem 1rem 1.5rem;
+    padding: 0 1rem 0 1.5rem;
+    min-height: 3.25rem;
     background-color: #333232;
     border-radius: 0.5rem;
     display: flex;
@@ -138,13 +143,17 @@ body {
     cursor: pointer;
 }
 
-.content ul li button i {
-    font-size: 1.2em;
-}
-
-.content form {
+.content ul li > div {
     display: flex;
     flex-direction: column;
+}
+
+.content ul li span.todo-info {
+    font-size: 0.8rem;
+}
+
+.content ul li button i {
+    font-size: 1.2em;
 }
 
 .content input {
@@ -161,6 +170,84 @@ body {
 .content input:focus {
     outline: 0;
     background-color: #424242;
+}
+
+/* todo detail */
+.todo-detail {
+    width: 0;
+    padding: 0;
+    opacity: 0;
+
+    background-color: #2e2d2d;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+    overflow-x: hidden;
+}
+
+.todo-detail.open {
+    width: 20rem;
+    padding: 0.25rem 0.75rem;
+    opacity: 1;
+}
+
+.todo-detail--close-btn-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    font-size: 0.8rem;
+}
+
+.todo-detail--section {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    background-color: #242323;
+    border-radius: 0.25rem;
+}
+
+.todo-detail--section-main > div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.todo-detail .btn {
+    justify-content: start;
+    background-color: transparent;
+}
+
+.todo-detail .btn:hover {
+    background-color: #424242;
+}
+
+.todo-detail textarea {
+    padding: 0.5rem 0.75rem;
+    background-color: transparent;
+    border-width: 0;
+    outline: 0;
+    border-radius: 0.25rem;
+    color: #cfcfcf;
+    font-size: 1em;
+    resize: vertical;
+}
+
+.todo-detail textarea:hover,
+.todo-detail textarea:focus {
+    outline: 0;
+}
+
+.todo-detail--footer {
+    font-size: 0.8rem;
+    display: flex;
+    flex-direction row;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 0.5rem;
 }
 
 /* scroll bar */
@@ -203,6 +290,15 @@ body {
     cursor: pointer;
 }
 
+.context-menu li i {
+    margin-right: 0.5rem;
+}
+
 .context-menu li:hover {
     background-color: #2e2d2d;
+}
+
+.context-menu .context-menu--item-danger:hover {
+    background-color: #5c3636;
+    color: #fc2d2d;
 }

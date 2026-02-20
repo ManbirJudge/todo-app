@@ -6,19 +6,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
     <link rel="shortcut icon" href="favicon.ico">
-    <script src="js/storage.js"></script>
+    <script type="module" src="js/db.js"></script>
+    <script type="module" src="js/state.js"></script>
+    <script type="module" src="js/actions.js"></script>
+    <script type="module" src="js/render.js"></script>
+    <script type="module" src="js/utils.js"></script>
     <title>Todo List</title>
-    <script src="https://kit.fontawesome.com/7fa49a6d73.js" crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/707454c148.js" crossorigin="anonymous"></script>
 </head>
 <body>
+    <menu id="list-context-menu" class="context-menu">
+        <li id="rename-list"><i class="fa-regular fa-pen-to-square"></i>Rename</li>
+        <!-- <li><i class="fa-regular fa-share-from-square"></i>Share</li>
+        <li><i class="fa-regular fa-circle-right"></i>Move to</li>
+        <li><i class="fa-solid fa-print"></i>Print</li> -->
+        <li id="dlt-list" class="context-menu--item-danger"><i class="fa-solid fa-trash"></i>Delete</li>
+    </menu>
     <menu id="todo-context-menu" class="context-menu">
-        <li>Mark as completed</li>
-        <li>Mark as important</li>
-        <!-- <li>Due today</li>
+        <li id="toggle-complete-todo"><i class="fa-regular fa-circle-check"></i>Mark as completed</li>
+        <!-- <li><i class="fa-regular fa-star"></i>Mark as important</li>
+        <li>Due today</li>
         <li>Due tommorow</li>
-        <li>Pick due date</li> -->
-        <li>Move to</li>
-        <li id="dlt-task">Delete Task</li>
+        <li>Pick due date</li>
+        <li><i class="fa-solid fa-arrow-down-up-across-line"></i>Move to</li> -->
+        <li id="dlt-task" class="context-menu--item-danger"><i class="fa-solid fa-trash"></i>Delete</li>
     </menu>
     <div class="side-bar">
         <h1>Todo List</h1>
@@ -29,12 +40,39 @@
         <div class="content--header">
             <h2 id="list-title"></h2>
             <div>
-                <button id="list-dlt-btn" class="btn btn-icon btn-danger"><i class="fa-regular fa-trash-can"></i></button>
+                <button id="list-dlt-btn" class="btn btn-icon btn-danger"><i class="fa-solid fa-trash"></i></button>
             </div>
         </div>
         <ul id="todos-list"></ul>
         <input id="add-todo" type="text" placeholder="Add todo ...">
     </div>
-    <script src="js/main.js"></script>
+    <div id="todo-detail" class="todo-detail">
+        <div class="todo-detail--close-btn-container">
+            <button class="btn btn-icon" id="todo-detail--save-btn"><i class="fa-regular fa-floppy-disk"></i></button>
+            <button class="btn btn-icon" id="todo-detail--close-btn"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="todo-detail--section todo-detail--section-main">
+            <div>
+                <i id="todo-detail--completed" class="fa-regular fa-circle"></i>
+                <h3 id="todo-detail--name">Todo</h3>
+                <div class="spacer"></div>
+                <i class="fa-regular fa-star"></i>
+            </div>
+            <ul class="todo-detail--steps-list"></ul>
+        </div>
+        <div class="todo-detail--section">
+            <button class="btn"><i class="fa-regular fa-calendar-days"></i>Add due date</button>
+            <button class="btn"><i class="fa-solid fa-repeat"></i>Repeat</button>
+        </div>
+        <div class="todo-detail--section">
+            <textarea id="todo-detail--note" placeholder="Add note ..."></textarea>
+        </div>
+        <div class="todo-detail--footer">
+            <p id="todo-detail--created"></p>
+            <button id="todo-detail--dlt-btn" class="btn btn-icon btn-danger"><i class="fa-solid fa-trash"></i></button>
+        </div>
+    </div>
+    <script type="module" src="js/dom.js"></script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>

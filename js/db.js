@@ -2,12 +2,14 @@
  * @typedef {Object} Todo
  * @property {number} id
  * @property {string} title 
- * @property {string | null} desc
+ * @property {string | null} note
  * @property {number} createdAt
  * @property {number | null} dueAt
  * @property {boolean} isCompleted
  * @property {number} list
  * @property {number[]} subTodos
+ *
+ * @property {number} completedAt
  */
 
 /**
@@ -80,12 +82,13 @@ class DB {
 
             const todo = {
                 title,
-                desc: null,
+                note: null,
                 createdAt: Date.now(),
                 dueAt: null,
                 isCompleted: false,
                 list,
-                subTodos: []
+                subTodos: [],
+                completedAt: null
             };
             const req = store.add(todo);
             
@@ -135,6 +138,19 @@ class DB {
             };
 
             tx.oncomplete = () => resolve(todos);
+            tx.onerror = evt => reject(evt.target.error);
+            tx.onabort = evt => reject(evt.target.error);
+        });
+    }
+
+    updateList(list, updates) {  // TODO: verify that updates contain valid fields
+        return new Promise((resolve, reject) => {
+            const tx = this.db.transaction("lists", "readwrite");
+            const store = tx.objectStore("lists");
+            
+            store.put({ ...list, ...updates });
+
+            tx.oncomplete = () => resolve();
             tx.onerror = evt => reject(evt.target.error);
             tx.onabort = evt => reject(evt.target.error);
         });
@@ -190,3 +206,5 @@ class DB {
         });
     }
 }
+
+export const db = new DB();
