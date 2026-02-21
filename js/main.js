@@ -1,12 +1,19 @@
 import {
     createNewList, loadLists, selectList, renameList, askAndDltList,
-    createNewTodoInCurrentList, toggleTodo, dltTodo,
+    createNewTodoInCurrentList, toggleTodo, toggleTodoImportance, dltTodo,
     openTodoDetail, closeTodoDetail, updateTodoFromDetail,
-    openListContextMenu, openTodoContextMenu, closeContextMenus
+    openListContextMenu, openTodoContextMenu, closeContextMenus,
+    closeSidebar, openSidebar
 } from "./actions.js";
 import { db } from "./db.js";
 import { dom } from "./dom.js";
 import { state } from "./state.js";
+
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/js/sw.js");
+}
+
+// TODO: group/organize event listeners related to similar tasks
 
 document.addEventListener("click", evt => {
     closeContextMenus();
@@ -28,7 +35,14 @@ dom.listsList.addEventListener("contextmenu", evt => {
     openListContextMenu(evt.clientX, evt.clientY, parseInt(li.getAttribute("data-id"))); 
 });
 
-dom.newListBtn.addEventListener("click", evt => {
+dom.specialListsList.addEventListener("click", evt => {
+    const li = evt.target.closest("li");
+    if (!li) return;
+
+    selectList(li.getAttribute("data-id"));
+});
+
+dom.sidebar.newListBtn.addEventListener("click", evt => {
     createNewList();
 });
 
@@ -37,11 +51,17 @@ dom.todosList.addEventListener("click", evt => {
     if (!li) return;
 
     const todoId = parseInt(li.getAttribute("data-id"));
+    
+    const btn = evt.target.closest("button");
 
-    if (evt.target.closest("i"))
-        toggleTodo(todoId);
-    else
-        openTodoDetail(todoId);
+    if (btn) {
+        if (btn.classList.contains("toggle-complete-btn")) {
+            toggleTodo(todoId);
+        } else if (btn.classList.contains("toggle-imp-btn")) {
+            toggleTodoImportance(todoId);
+        }
+    }
+    else openTodoDetail(todoId);
 });
 
 dom.todosList.addEventListener("contextmenu", evt => {
@@ -53,10 +73,10 @@ dom.todosList.addEventListener("contextmenu", evt => {
     openTodoContextMenu(evt.clientX, evt.clientY, parseInt(li.getAttribute("data-id")));
 });
 
-dom.addTodoIn.addEventListener("keypress", evt => {
+dom.content.addTodoIn.addEventListener("keypress", evt => {
     const keyCode = evt.keyCode || evt.which;
     if (keyCode === 13)
-        createNewTodoInCurrentList(dom.addTodoIn.value);
+        createNewTodoInCurrentList(dom.content.addTodoIn.value);
 });
 
 dom.todoContextMenu.addEventListener("click", evt => {
@@ -65,6 +85,10 @@ dom.todoContextMenu.addEventListener("click", evt => {
     switch (cmd.id) {
         case "toggle-complete-todo": {
             toggleTodo(todoId);
+            break;
+        }
+        case "toggle-imp-todo": {
+            toggleTodoImportance(todoId);
             break;
         }
         case "dlt-task": {
@@ -76,7 +100,7 @@ dom.todoContextMenu.addEventListener("click", evt => {
 
 dom.listContextMenu.addEventListener("click", evt => {
     const listId = state.ui.listContextMenu.listId;
-    
+
     const cmd = evt.target.closest("li");
     switch (cmd.id) {
         case "rename-list": {
@@ -90,18 +114,36 @@ dom.listContextMenu.addEventListener("click", evt => {
     }
 });
 
-dom.dltListBtn.addEventListener("click", evt => {
+dom.content.dltListBtn.addEventListener("click", evt => {
     askAndDltList(state.activeList);
 });
 
-dom.todoDetailCloseBtn.addEventListener("click", evt => {
+dom.todoDetail.closeBtn.addEventListener("click", evt => {
     closeTodoDetail();
 });
-dom.todoDetailSaveBtn.addEventListener("click", evt => {
+
+dom.todoDetail.saveBtn.addEventListener("click", evt => {
     updateTodoFromDetail();
 });
-dom.todoDetailDltBtn.addEventListener("click", evt => {
+
+dom.todoDetail.dltBtn.addEventListener("click", evt => {
     dltTodo(state.activeTodo);
+});
+
+dom.todoDetail.completedI.addEventListener("click", evt => {
+    toggleTodo(state.activeTodo);
+});
+
+dom.todoDetail.impI.addEventListener("click", evt => {
+    toggleTodoImportance(state.activeTodo);
+});
+
+dom.content.sidebarHamburgerBtn.addEventListener("click", evt => {
+    openSidebar(true);
+});
+
+dom.sidebar.closeBtn.addEventListener("click", evt => {
+    closeSidebar(true);
 });
 
 // ---

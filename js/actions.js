@@ -1,11 +1,11 @@
 import { db } from "./db.js";
 import { dom } from "./dom.js";
-import { render } from "./render.js";
+import { render, renderSidebar } from "./render.js";
 import { state } from "./state.js";
 
 function handleErr(err) {
     console.log("[ERROR]", err);
-}
+};
 
 function sortTodos(method = null, reRender = false) {
     if (method == null) method = state.todoSortMethod;
@@ -13,10 +13,13 @@ function sortTodos(method = null, reRender = false) {
     switch (method) {
         case "default": {
             state.todos = state.todos.sort((a, b) => {
-                if (a.isCompleted !== b.isCompleted)
+                if (a.isCompleted !== b.isCompleted)  // incomplete first
                     return a.isCompleted ? 1 : -1;
-                else if (!a.isCompleted)  // both incomplete
+                else if (!a.isCompleted) {  // both incomplete
+                    if (a.isImportant !== b.isImportant)  // important first
+                        return a.isImportant ? -1 : 1; 
                     return a.createdAt - b.createdAt;
+                }
                 else  // both complete
                     return a.completedAt - b.completedAt;
             });
@@ -30,7 +33,7 @@ function sortTodos(method = null, reRender = false) {
     }
 
     if (reRender) render();
-}
+};
 
 // ---
 export function createNewList() {
@@ -54,13 +57,21 @@ export function loadLists() {
 
 export function selectList(listId) {
     if (state.activeList === listId) return;
+    
+    let todosPromise;
+    if (listId === "important") {
+        todosPromise = db.getImportantTodos();
+    } else {
+        todosPromise = db.getTodos(listId);
+    }
 
-    db.getTodos(listId).then(todos => {
+    todosPromise.then(todos => {
         state.activeList = listId;
         state.todos = todos; 
         state.ui.todoDetail.isOpen = false;
         
         sortTodos();
+        closeSidebar();
         render();
     }).catch(err => handleErr(err));
 };
@@ -80,7 +91,7 @@ export function renameList(listId) {
 };
 
 export function askAndDltList(listId) {
-    if (listId === -1) return;
+    if (listId === -1 || listId === "important") return;
 
     const listToDltName = state.lists.find(l => l.id === listId).name;
     if (window.confirm(`Are you sure you want to delete the list "${listToDltName}"?`)) {
@@ -99,7 +110,7 @@ export function askAndDltList(listId) {
 // ---
 export function createNewTodoInCurrentList(title) {
     if (title.trim() === "") return;
-    if (state.activeList === -1) return;
+    if (state.activeList === -1 || state.activeList === "important") return;
 
     db.createTodo(title.trim(), state.activeList).then(newTodo => {
         state.todos.push(newTodo);
@@ -124,9 +135,24 @@ export function toggleTodo(todoId) {
     }).catch(err => handleErr(err));
 };
 
-export function dltTodo(todoId) {
-    if (state.todos.find(t => t.id === todoId).list !== state.activeList) return;
+export function toggleTodoImportance(todoId) {
+    const todo = state.todos.find(t => t.id === todoId);
 
+    const wasImp = todo.isImportant;
+
+    db.updateTodo(todo, { isImportant: Number(!wasImp) }).then(() => {
+        todo.isImportant = Number(!wasImp);
+        if (state.activeList === "important" && !todo.isImp) {
+            state.todos = state.todos.filter(t => t.id !== todoId);
+        }
+        
+        sortTodos();
+        render();
+    }).catch(err => handleErr(err));
+};
+
+export function dltTodo(todoId) {
+    // if (state.todos.find(t => t.id === todoId).list !== state.activeList) return;
     db.dltTodo(todoId).then(() => {
         state.todos = state.todos.filter(t => t.id !== todoId);
         if (state.activeTodo === todoId)
@@ -147,19 +173,24 @@ export function openTodoDetail(todoId) {
 export function closeTodoDetail() {
     state.ui.todoDetail.isOpen = false;
     render();
-}
+};
 
 export function updateTodoFromDetail() {
     const todo = state.todos.find(t => t.id === state.activeTodo);
     
-    const newNote = dom.todoDetailNote.value.trim() !== "" ? dom.todoDetailNote.value.trim() : null;
+    const newTitle = dom.todoDetail.nameIn.value.trim() !== "" ? dom.todoDetail.nameIn.value.trim() : null;
+    const newNote = dom.todoDetail.noteTxt.value.trim() !== "" ? dom.todoDetail.noteTxt.value.trim() : null;
     
-    db.updateTodo(todo, { note: newNote }).then(() => {
+    db.updateTodo(todo, { title: newTitle, note: newNote }).then(() => {
+        todo.title = newTitle;
         todo.note = newNote;
+        
+        if (window.innerWidth < 768)
+            state.ui.todoDetail.isOpen = false;
 
         render();
     }).catch(err => handleErr(err));
-}
+};
 
 // ---
 export function openListContextMenu(x, y, listId) {
@@ -173,7 +204,7 @@ export function openListContextMenu(x, y, listId) {
         state.ui.todoContextMenu.isOpen = false;
 
     render();
-}
+};
 
 export function openTodoContextMenu(x, y, todoId) {
     state.ui.todoContextMenu = {
@@ -186,10 +217,21 @@ export function openTodoContextMenu(x, y, todoId) {
         state.ui.listContextMenu.isOpen = false;
 
     render();
-}
+};
 
 export function closeContextMenus() {
     state.ui.todoContextMenu.isOpen = false;
     state.ui.listContextMenu.isOpen = false;
     render();
 };
+
+// ---
+export function openSidebar(reRender = false) {
+    state.ui.isSidebarOpen = true;
+    if (reRender) renderSidebar();
+}
+
+export function closeSidebar(reRender = false) {
+    state.ui.isSidebarOpen = false;
+    if (reRender) renderSidebar();
+}

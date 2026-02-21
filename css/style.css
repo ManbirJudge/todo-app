@@ -10,6 +10,8 @@
     padding: 0;
     box-sizing: border-box;
     user-select: none;
+    border: 0;
+    outline: 0;
 }
 
 .btn {
@@ -45,6 +47,13 @@
     flex: 1;
 }
 
+.divider {
+    height: 1px;
+    border-radius: 1rem;
+    background-color: #424242;
+    margin: 0.25rem 0;
+}
+
 /* --- */
 body {
     min-height: 100dvh;
@@ -68,6 +77,13 @@ body {
     gap: 0.5rem;
 }
 
+.side-bar--header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
 .side-bar h1 {
     font-size: 1.5em;
     padding-left: 0.5rem;
@@ -75,6 +91,9 @@ body {
 
 .side-bar ul {
     list-style: none;
+}
+
+.side-bar--lists-container {
     flex: 1;
     overflow: auto;
 }
@@ -87,6 +106,10 @@ body {
 
 .side-bar li:hover {
     background-color: #333232;
+}
+
+.side-bar li i {
+    margin-right: 0.25rem;
 }
 
 /* content */
@@ -104,6 +127,11 @@ body {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+}
+
+#sidebar-hambuger-btn,
+#side-bar--close-btn {
+    display: none;
 }
 
 .content--header h2 {
@@ -176,7 +204,6 @@ body {
 .todo-detail {
     width: 0;
     padding: 0;
-    opacity: 0;
 
     background-color: #2e2d2d;
     display: flex;
@@ -190,7 +217,6 @@ body {
 .todo-detail.open {
     width: 20rem;
     padding: 0.25rem 0.75rem;
-    opacity: 1;
 }
 
 .todo-detail--close-btn-container {
@@ -209,11 +235,21 @@ body {
 }
 
 .todo-detail--section-main > div {
+    width: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 0.5rem;
     padding: 0.25rem 0.5rem;
+}
+
+#todo-detail--name {
+    min-width: 0;
+    background: transparent;
+    font-size: 1.2em;
+    font-weight: bold;
+    flex: 1;
+    color: inherit;
 }
 
 .todo-detail .btn {
@@ -301,4 +337,45 @@ body {
 .context-menu .context-menu--item-danger:hover {
     background-color: #5c3636;
     color: #fc2d2d;
+}
+
+/* --- */
+@media (max-width: 768px) {
+    .side-bar {
+        overflow: hidden;
+        position: fixed;
+        left: 0;
+        width: 0;
+        padding: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 1000;
+        transition: all 0.1s ease-in-out;
+    }
+
+    .side-bar.open {
+        width: 100%;
+        padding: 0.5rem;
+    }
+
+    #sidebar-hambuger-btn,
+    #side-bar--close-btn {
+        display: block;
+    }
+
+    .todo-detail {
+        position: fixed;
+        right: 0;
+        width: 0;
+        padding: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 1000;
+        transition: all 0.1s ease-in-out;
+    }
+
+    .todo-detail.open {
+        width: 100%;
+        padding: 0.25rem 0.75rem;
+    }
 }

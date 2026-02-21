@@ -8,6 +8,7 @@
  * @property {boolean} isCompleted
  * @property {number} list
  * @property {number[]} subTodos
+ * @property {number} isImportant
  *
  * @property {number} completedAt
  */
@@ -50,6 +51,7 @@ class DB {
                     autoIncrement: true
                 });
                 todosStore.createIndex("by_list", "list", { unique: false });
+                todosStore.createIndex("by_isImportant", "isImportant", { unique: false });
             }
         };
     }
@@ -88,7 +90,8 @@ class DB {
                 isCompleted: false,
                 list,
                 subTodos: [],
-                completedAt: null
+                completedAt: null,
+                isImportant: 0
             };
             const req = store.add(todo);
             
@@ -131,6 +134,25 @@ class DB {
             const idx = store.index("by_list");
 
             const req = idx.getAll(list);
+
+            let todos;
+            req.onsuccess = evt => {
+                todos = evt.target.result;
+            };
+
+            tx.oncomplete = () => resolve(todos);
+            tx.onerror = evt => reject(evt.target.error);
+            tx.onabort = evt => reject(evt.target.error);
+        });
+    }
+
+    getImportantTodos() {
+        return new Promise((resolve, reject) => {
+            const tx = this.db.transaction("todos", "readonly");
+            const store = tx.objectStore("todos");
+            const idx = store.index("by_isImportant");
+
+            const req = idx.getAll(1);
 
             let todos;
             req.onsuccess = evt => {

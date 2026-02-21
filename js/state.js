@@ -19,5 +19,6 @@ export let state = {
         todoDetail: {
             isOpen: false
         }
-    }
+    },
+    todoSortMethod: "default"
 };
