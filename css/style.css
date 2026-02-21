@@ -129,7 +129,7 @@ body {
     justify-content: space-between;
 }
 
-#sidebar-hambuger-btn,
+#sidebar-hamburger-btn,
 #side-bar--close-btn {
     display: none;
 }
@@ -358,7 +358,7 @@ body {
         padding: 0.5rem;
     }
 
-    #sidebar-hambuger-btn,
+    #sidebar-hamburger-btn,
     #side-bar--close-btn {
         display: block;
     }
